@@ -1,15 +1,13 @@
 import os
 import logging
 import redis
-import telegram
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
     Updater, CommandHandler,
     MessageHandler, Filters, CallbackContext,
-    CallbackQueryHandler)
+)
 from random import choice
 from dotenv import load_dotenv
-from pprint import pprint
 
 logger = logging.getLogger("quiz_logger")
 
@@ -37,7 +35,6 @@ def processing_button_click(update: Update, context: CallbackContext) -> None:
 
     if button == 'Новый вопрос':
         quiz = choice(context.bot_data['quiz'])
-        logger.info(quiz)
         update.message.reply_text(quiz['Вопрос'])
         for key in redis.hkeys(chat_id):
             redis.hdel(chat_id, key)
@@ -56,20 +53,16 @@ def processing_button_click(update: Update, context: CallbackContext) -> None:
 
     else:
         if quiz_from_db:
-            if button == quiz_from_db['Ответ']:
+            if button.lower() == quiz_from_db['Ответ'].lower():
                 update.message.reply_text(
-                    f'Верный ответ!'
+                    f'''Правильно! Поздравляю!
+                    Для следующего вопроса нажми «Новый вопрос»'''
                 )
                 redis.incr(f'{chat_id}:total')
             else:
                 update.message.reply_text(
-                    f'К сожалению, ответ неверный!'
+                    f'Неправильно… Попробуешь ещё раз?'
                 )
-                update.message.reply_text(quiz_from_db['Ответ'])
-                if 'Комментарий' in quiz_from_db:
-                    update.message.reply_text(
-                        f'Комментарий: {quiz_from_db["Комментарий"]}'
-                    )
 
 
 def correct_text_quiz(quiz):
@@ -92,6 +85,7 @@ def generate_quiz(count=5):
     quiz = []
     for _ in range(count):
         filename = os.path.join('files', choice(os.listdir('files')))
+        logger.info(filename)
         with open(filename, 'r', encoding='KOI8-R') as file:
             content = file.read()
 
