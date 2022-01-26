@@ -23,8 +23,7 @@ def start(update: Update, context: CallbackContext) -> int:
     ]
     reply_markup = ReplyKeyboardMarkup(quiz_keyboard, resize_keyboard=True)
     update.message.reply_text(
-        text='''Привет! Я бот для викторин.
-Нажмите 'Новый вопрос' или команду /cancel для выхода''',
+        text='Привет! Я бот - викторина. Нажмите "Новый вопрос"" или команду /cancel для выхода',
         reply_markup=reply_markup
     )
 
@@ -78,8 +77,7 @@ def solution_attempt(update: Update, context: CallbackContext) -> int:
     if quiz_from_db:
         if update.message.text.lower() == quiz_from_db['Ответ'].lower():
             update.message.reply_text(
-                f'''Правильно! Поздравляю!
-                Для следующего вопроса нажми «Новый вопрос»'''
+                f'Правильно! Поздравляю! Для следующего вопроса нажми «Новый вопрос»'
             )
             redis.incr(f'{chat_id}:total')
 
@@ -204,14 +202,6 @@ if __name__ == '__main__':
     )
 
     dispatcher.add_handler(conv_handler)
-
-    # dispatcher.add_handler(CommandHandler("start", start))
-    # dispatcher.add_handler(CommandHandler("cancel", cancel))
-    # dispatcher.add_handler(
-    #     MessageHandler(
-    #         Filters.text & ~Filters.command,
-    #         processing_button_click)
-    # )
 
     updater.start_polling()
     updater.idle()
