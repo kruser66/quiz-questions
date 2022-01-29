@@ -23,7 +23,9 @@ def start(update: Update, context: CallbackContext) -> int:
     ]
     reply_markup = ReplyKeyboardMarkup(quiz_keyboard, resize_keyboard=True)
     update.message.reply_text(
-        text='Привет! Я бот - викторина. Нажмите "Новый вопрос"" или команду /cancel для выхода',
+        text='''Привет!
+        Я бот - викторина.
+        Нажмите "Новый вопрос"" или команду /cancel для выхода''',
         reply_markup=reply_markup
     )
 
@@ -58,7 +60,7 @@ def surrender(update: Update, context: CallbackContext) -> int:
     redis = context.bot_data['redis']
     quiz_from_db = redis.hgetall(chat_id)
 
-    update.message.reply_text(quiz_from_db['Ответ'])
+    update.message.reply_text(f'Ответ: {quiz_from_db["Ответ"]}')
     if 'Комментарий' in quiz_from_db:
         update.message.reply_text(
             f'Комментарий: {quiz_from_db["Комментарий"]}'

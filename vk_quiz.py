@@ -12,7 +12,7 @@ from quiz_maker import generate_quiz
 
 logger = logging.getLogger('quiz-logger')
 
-keyboard = VkKeyboard(one_time=True)
+keyboard = VkKeyboard()
 
 keyboard.add_button('Новый вопрос', color=VkKeyboardColor.PRIMARY)
 keyboard.add_button('Сдаться', color=VkKeyboardColor.NEGATIVE)
@@ -39,6 +39,7 @@ def cancel(event, vk_api):
         user_id=event.user_id,
         message=f'До скорых встреч {user}!',
         random_id=get_random_id(),
+        keyboard=keyboard.get_empty_keyboard()
     )
 
 
@@ -63,7 +64,7 @@ def surrender(event, vk_api, redis):
 
     vk_api.messages.send(
         user_id=chat_id,
-        message=quiz_from_db['Ответ'],
+        message=f'Ответ: {quiz_from_db["Ответ"]}',
         random_id=get_random_id(),
         keyboard=keyboard.get_keyboard()
     )

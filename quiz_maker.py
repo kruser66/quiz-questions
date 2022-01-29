@@ -62,4 +62,4 @@ if __name__ == '__main__':
         level=logging.INFO
     )
 
-    quiz = generate_quiz(2)
+    quiz = generate_quiz(files_to_collect=2)
