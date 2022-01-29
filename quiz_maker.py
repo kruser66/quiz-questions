@@ -28,7 +28,7 @@ def generate_quiz(files_to_collect=5):
     ]
     quiz = []
     for _ in range(files_to_collect):
-        filename = os.path.join('files', choice(os.listdir('files')))
+        filename = os.path.join('examples', choice(os.listdir('examples')))
         logger.info(filename)
         with open(filename, 'r', encoding='KOI8-R') as file:
             content = file.read()
