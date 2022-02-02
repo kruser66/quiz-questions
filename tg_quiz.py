@@ -58,12 +58,12 @@ def new_question_request(update: Update, context: CallbackContext) -> int:
 def surrender(update: Update, context: CallbackContext) -> int:
     chat_id = update.message.chat['id']
     redis = context.bot_data['redis']
-    quiz_from_db = redis.hgetall(chat_id)
+    current_quiz = redis.hgetall(chat_id)
 
-    update.message.reply_text(f'Ответ: {quiz_from_db["Ответ"]}')
-    if 'Комментарий' in quiz_from_db:
+    update.message.reply_text(f'Ответ: {current_quiz["Ответ"]}')
+    if 'Комментарий' in current_quiz:
         update.message.reply_text(
-            f'Комментарий: {quiz_from_db["Комментарий"]}'
+            f'Комментарий: {current_quiz["Комментарий"]}'
         )
 
     return NEW_QUIZ
@@ -72,12 +72,12 @@ def surrender(update: Update, context: CallbackContext) -> int:
 def solution_attempt(update: Update, context: CallbackContext) -> int:
     chat_id = update.message.chat['id']
     redis = context.bot_data['redis']
-    quiz_from_db = redis.hgetall(chat_id)
+    current_quiz = redis.hgetall(chat_id)
     if not redis.get(f'{chat_id}:total'):
         redis.set(f'{chat_id}:total', '0')
 
-    if quiz_from_db:
-        if update.message.text.lower() == quiz_from_db['Ответ'].lower():
+    if current_quiz:
+        if update.message.text.lower() == current_quiz['Ответ'].lower():
             update.message.reply_text(
                 f'Правильно! Поздравляю! Для следующего вопроса нажми «Новый вопрос»'
             )

@@ -60,18 +60,18 @@ def new_question_request(event, vk_api, collection_quiz, redis):
 
 def surrender(event, vk_api, redis):
     chat_id = event.user_id
-    quiz_from_db = redis.hgetall(chat_id)
+    current_quiz = redis.hgetall(chat_id)
 
     vk_api.messages.send(
         user_id=chat_id,
-        message=f'Ответ: {quiz_from_db["Ответ"]}',
+        message=f'Ответ: {current_quiz["Ответ"]}',
         random_id=get_random_id(),
         keyboard=keyboard.get_keyboard()
     )
-    if 'Комментарий' in quiz_from_db:
+    if 'Комментарий' in current_quiz:
         vk_api.messages.send(
             user_id=chat_id,
-            message=f'Комментарий: {quiz_from_db["Комментарий"]}',
+            message=f'Комментарий: {current_quiz["Комментарий"]}',
             random_id=get_random_id(),
             keyboard=keyboard.get_keyboard()
         )
@@ -79,12 +79,12 @@ def surrender(event, vk_api, redis):
 
 def solution_attempt(event, vk_api, redis):
     chat_id = event.user_id
-    quiz_from_db = redis.hgetall(chat_id)
+    current_quiz = redis.hgetall(chat_id)
     if not redis.get(f'{chat_id}:total'):
         redis.set(f'{chat_id}:total', '0')
 
-    if quiz_from_db:
-        if event.text.lower() == quiz_from_db['Ответ'].lower():
+    if current_quiz:
+        if event.text.lower() == current_quiz['Ответ'].lower():
             vk_api.messages.send(
                 user_id=chat_id,
                 message='''Правильно! Поздравляю!
