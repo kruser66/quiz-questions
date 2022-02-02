@@ -96,11 +96,11 @@ def solution_attempt(update: Update, context: CallbackContext) -> int:
 def total_request(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat['id']
     redis = context.bot_data['redis']
-    if not redis.get(f'{chat_id}:total'):
-        redis.set(f'{chat_id}:total', '0')
 
     total = redis.get(f'{chat_id}:total')
-    update.message.reply_text(f'Количество Ваших верных ответов: {total}')
+    update.message.reply_text(
+        f'Количество Ваших верных ответов: {total if total else 0}'
+    )
 
 
 if __name__ == '__main__':

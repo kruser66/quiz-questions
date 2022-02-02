@@ -105,13 +105,11 @@ def solution_attempt(event, vk_api, redis):
 
 def total_request(event, vk_api, redis):
     chat_id = event.user_id
-    if not redis.get(f'{chat_id}:total'):
-        redis.set(f'{chat_id}:total', '0')
 
     total = redis.get(f'{chat_id}:total')
     vk_api.messages.send(
         user_id=chat_id,
-        message=f'Количество Ваших верных ответов: {total}',
+        message=f'Количество Ваших верных ответов: {total if total else 0}',
         random_id=get_random_id(),
         keyboard=keyboard.get_keyboard()
     )
