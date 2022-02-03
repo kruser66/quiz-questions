@@ -73,24 +73,25 @@ def solution_attempt(update: Update, context: CallbackContext) -> int:
     chat_id = update.message.chat['id']
     redis = context.bot_data['redis']
     current_quiz = redis.hgetall(chat_id)
+
     if not redis.get(f'{chat_id}:total'):
         redis.set(f'{chat_id}:total', '0')
 
-    if current_quiz:
-        if update.message.text.lower() == current_quiz['Ответ'].lower():
-            update.message.reply_text(
-                f'Правильно! Поздравляю! Для следующего вопроса нажми «Новый вопрос»'
-            )
-            redis.incr(f'{chat_id}:total')
+    if update.message.text.lower() == current_quiz['Ответ'].lower():
+        update.message.reply_text(
+            f'''Правильно! Поздравляю!
+Для следующего вопроса нажми «Новый вопрос»'''
+        )
+        redis.incr(f'{chat_id}:total')
 
-            return NEW_QUIZ
+        return NEW_QUIZ
 
-        else:
-            update.message.reply_text(
-                f'Неправильно… Попробуешь ещё раз?'
-            )
+    else:
+        update.message.reply_text(
+            f'Неправильно… Попробуешь ещё раз?'
+        )
 
-    return SURRENDER
+        return SURRENDER
 
 
 def total_request(update: Update, context: CallbackContext) -> None:
