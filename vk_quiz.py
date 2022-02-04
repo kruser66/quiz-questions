@@ -21,8 +21,7 @@ keyboard.add_line()
 keyboard.add_button('Мой счет', color=VkKeyboardColor.SECONDARY)
 
 
-def start(event, vk_api):
-
+def start(event, vk_api, redis):
     vk_api.messages.send(
         user_id=event.user_id,
         message='''Привет! Я бот-викторина!
@@ -31,9 +30,10 @@ def start(event, vk_api):
         random_id=get_random_id(),
         keyboard=keyboard.get_keyboard()
     )
+    redis.set(f'{event.user_id}:start', '1')
 
 
-def cancel(event, vk_api):
+def cancel(event, vk_api, redis):
     user = vk_api.users.get(user_ids=event.user_id)[0]["first_name"]
     vk_api.messages.send(
         user_id=event.user_id,
@@ -41,6 +41,7 @@ def cancel(event, vk_api):
         random_id=get_random_id(),
         keyboard=keyboard.get_empty_keyboard()
     )
+    redis.set(f'{event.user_id}:start', '0')
 
 
 def new_question_request(event, vk_api, collection_quiz, redis):
@@ -79,6 +80,8 @@ def surrender(event, vk_api, redis):
 
 def solution_attempt(event, vk_api, redis):
     chat_id = event.user_id
+    if redis.get(f'{chat_id}:start') != '1':
+        return
     current_quiz = redis.hgetall(chat_id)
     if not redis.get(f'{chat_id}:total'):
         redis.set(f'{chat_id}:total', '0')
@@ -143,10 +146,11 @@ if __name__ == "__main__":
     longpoll = VkLongPoll(vk_session)
 
     quiz = generate_quiz(files_to_collect=2)
-    quiz_start = False
 
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+            print(event)
+            print(dir(event))
             if event.text == 'Новый вопрос':
                 new_question_request(event, vk_api, quiz, db_redis)
             elif event.text == 'Сдаться':
@@ -154,11 +158,9 @@ if __name__ == "__main__":
             elif event.text == 'Мой счет':
                 total_request(event, vk_api, db_redis)
             elif event.text == 'Начать':
-                start(event, vk_api)
-                quiz_start = True
+                start(event, vk_api, db_redis)
             elif event.text == 'Стоп':
                 total_request(event, vk_api, db_redis)
-                cancel(event, vk_api)
-                quiz_start = False
-            elif quiz_start:
+                cancel(event, vk_api, db_redis)
+            else:
                 solution_attempt(event, vk_api, db_redis)
