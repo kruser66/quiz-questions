@@ -133,7 +133,7 @@ if __name__ == '__main__':
     dispatcher = updater.dispatcher
     dispatcher.bot_data = {
         'redis': db_redis,
-        'quiz': generate_quiz(files_to_collect=2)
+        'quiz': generate_quiz('examples')
     }
 
     conv_handler = ConversationHandler(

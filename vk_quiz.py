@@ -144,12 +144,10 @@ if __name__ == "__main__":
 
     longpoll = VkLongPoll(vk_session)
 
-    quiz = generate_quiz(files_to_collect=2)
+    quiz = generate_quiz('examples')
 
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            print(event)
-            print(dir(event))
             if event.text == 'Новый вопрос':
                 new_question_request(event, vk_api, quiz, db_redis)
             elif event.text == 'Сдаться':

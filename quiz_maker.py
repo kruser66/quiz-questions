@@ -22,14 +22,15 @@ def correct_quiz_text(quiz):
     return corrected_quiz
 
 
-def generate_quiz(files_to_collect=5):
+def generate_quiz(quiz_directory):
     starts = [
         'Ответ', 'Комментарий'
     ]
     quiz = []
-    for _ in range(files_to_collect):
-        filename = os.path.join('examples', choice(os.listdir('examples')))
-        logger.info(filename)
+
+    for file in os.listdir(quiz_directory):
+        filename = os.path.join(quiz_directory, file)
+
         with open(filename, 'r', encoding='KOI8-R') as file:
             content = file.read()
 
@@ -62,4 +63,4 @@ if __name__ == '__main__':
         level=logging.INFO
     )
 
-    quiz = generate_quiz(files_to_collect=2)
+    quiz = generate_quiz('examples')
