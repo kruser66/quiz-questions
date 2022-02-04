@@ -86,24 +86,23 @@ def solution_attempt(event, vk_api, redis):
     if not redis.get(f'{chat_id}:total'):
         redis.set(f'{chat_id}:total', '0')
 
-    if current_quiz:
-        if event.text.lower() == current_quiz['Ответ'].lower():
-            vk_api.messages.send(
-                user_id=chat_id,
-                message='''Правильно! Поздравляю!
-                Чтобы продолжить нажми «Новый вопрос»''',
-                random_id=get_random_id(),
-                keyboard=keyboard.get_keyboard()
-            )
-            redis.incr(f'{chat_id}:total')
+    if event.text.lower() == current_quiz['Ответ'].lower():
+        vk_api.messages.send(
+            user_id=chat_id,
+            message='''Правильно! Поздравляю!
+            Чтобы продолжить нажми «Новый вопрос»''',
+            random_id=get_random_id(),
+            keyboard=keyboard.get_keyboard()
+        )
+        redis.incr(f'{chat_id}:total')
 
-        else:
-            vk_api.messages.send(
-                user_id=chat_id,
-                message='Неправильно… Попробуешь ещё раз?',
-                random_id=get_random_id(),
-                keyboard=keyboard.get_keyboard()
-            )
+    else:
+        vk_api.messages.send(
+            user_id=chat_id,
+            message='Неправильно… Попробуешь ещё раз?',
+            random_id=get_random_id(),
+            keyboard=keyboard.get_keyboard()
+        )
 
 
 def total_request(event, vk_api, redis):
