@@ -1,6 +1,7 @@
 import os
 import logging
 import redis
+import argparse
 import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
@@ -123,6 +124,22 @@ if __name__ == "__main__":
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         level=logging.INFO
     )
+
+    parser = argparse.ArgumentParser(
+        description='Викторина в ВКонтакте'
+    )
+    parser.add_argument(
+        '-p',
+        '--path',
+        help='Укажите путь до каталога с викториной',
+        default='examples'
+    )
+    args = parser.parse_args()
+
+    if not os.path.exists(args.path):
+        logging.error('Указанный каталог не существует')
+        exit()
+
     load_dotenv()
 
     redis_host = os.environ['DB_REDIS']
@@ -144,7 +161,7 @@ if __name__ == "__main__":
 
     longpoll = VkLongPoll(vk_session)
 
-    quiz = generate_quiz('examples')
+    quiz = generate_quiz(args.path)
 
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:

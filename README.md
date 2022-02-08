@@ -67,15 +67,15 @@ DB_PASSWORD='REDIS_DB_PASSWORD'
 
 
 ## Запуск модуля чат-бота Telegram
-
+По умолчанию каталог `examples`
 ```
-python tg_quiz.py
+python tg_quiz.py -p [path_to_quiz_files]
 ```
 
 ## Запуск модуля чат-бота ВКонтакте
-
+По умолчанию каталог `examples`
 ```
-python vk_quiz.py
+python vk_quiz.py -p [path_to_quiz_files]
 ```
 
 ## Подготовка вопросов викторины

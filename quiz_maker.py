@@ -1,7 +1,6 @@
 import os
 import logging
 import re
-from random import choice
 
 logger = logging.getLogger("quiz_logger")
 

@@ -1,6 +1,7 @@
 import os
 import logging
 import redis
+import argparse
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import (
     Updater, CommandHandler, ConversationHandler,
@@ -112,6 +113,21 @@ if __name__ == '__main__':
         level=logging.INFO
     )
 
+    parser = argparse.ArgumentParser(
+        description='Викторина в Телеграм'
+    )
+    parser.add_argument(
+        '-p',
+        '--path',
+        help='Укажите путь до каталога с викториной',
+        default='examples'
+    )
+    args = parser.parse_args()
+
+    if not os.path.exists(args.path):
+        logging.error('Указанный каталог не существует')
+        exit()
+
     logger.info('Запущен quiz_questions_bot')
 
     load_dotenv()
@@ -133,7 +149,7 @@ if __name__ == '__main__':
     dispatcher = updater.dispatcher
     dispatcher.bot_data = {
         'redis': db_redis,
-        'quiz': generate_quiz('examples')
+        'quiz': generate_quiz(args.path)
     }
 
     conv_handler = ConversationHandler(
