@@ -5,6 +5,7 @@ __pycache__/
 
 #dirs
 files/
+examples2/
 
 #Environ
 .env
